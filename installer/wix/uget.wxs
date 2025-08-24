@@ -57,7 +57,7 @@
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <Component Id="ProductComponent" Guid="12345678-1234-1234-1234-123456789013">
-        <File Id="uget.exe" Source="uget.exe" KeyPath="yes">
+        <File Id="uget.exe" Source="installer\wix\uget.exe" KeyPath="yes">
           <Shortcut Id="ApplicationStartMenuShortcut" 
                     Directory="ApplicationProgramsFolder" 
                     Name="uget Command Prompt"
