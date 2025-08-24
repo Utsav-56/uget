@@ -110,27 +110,33 @@ jobs:
 
             - name: Build MSI installer
               shell: pwsh
+              continue-on-error: true
               run: |
                   try {
                     $version = "$env:VERSION"
                     .\build-msi.ps1 -BinaryPath "dist/uget-windows-amd64.exe" -Version "$version" -OutputDir "dist"
                     echo "MSI_BUILD_SUCCESS=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+                    echo "✓ MSI installer built successfully"
                   }
                   catch {
-                    echo "MSI build failed: $($_.Exception.Message)"
+                    echo "⚠️ MSI build failed: $($_.Exception.Message)"
+                    echo "Continuing without MSI installer..."
                     echo "MSI_BUILD_SUCCESS=false" | Out-File -FilePath $env:GITHUB_ENV -Append
                   }
 
             - name: Build EXE installer
               shell: pwsh
+              continue-on-error: true
               run: |
                   try {
                     $version = "$env:VERSION"
                     .\build-exe.ps1 -BinaryPath "dist/uget-windows-amd64.exe" -Version "$version" -OutputDir "dist"
                     echo "EXE_BUILD_SUCCESS=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+                    echo "✓ EXE installer built successfully"
                   }
                   catch {
-                    echo "EXE build failed: $($_.Exception.Message)"
+                    echo "⚠️ EXE build failed: $($_.Exception.Message)"
+                    echo "Continuing without EXE installer..."
                     echo "EXE_BUILD_SUCCESS=false" | Out-File -FilePath $env:GITHUB_ENV -Append
                   }
 
