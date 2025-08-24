@@ -81,19 +81,15 @@ jobs:
             - name: Install NSIS
               shell: pwsh
               run: |
-                  # Download and install NSIS 3.09
-                  $nsisUrl = "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.09/nsis-3.09-setup.exe"
-                  $nsisInstaller = "nsis-3.09-setup.exe"
+                  # Install NSIS using Chocolatey (pre-installed on GitHub runners)
+                  echo "Installing NSIS via Chocolatey..."
+                  choco install nsis --version=3.09 -y
                   
-                  echo "Downloading NSIS..."
-                  Invoke-WebRequest -Uri $nsisUrl -OutFile $nsisInstaller
+                  # Refresh environment variables
+                  refreshenv
                   
-                  echo "Installing NSIS..."
-                  Start-Process -FilePath $nsisInstaller -ArgumentList "/S" -Wait
-                  
-                  # Add NSIS to PATH
-                  $nsisPath = "C:\Program Files (x86)\NSIS"
-                  echo "$nsisPath" >> $env:GITHUB_PATH
+                  # Verify installation
+                  makensis /VERSION
 
             - name: Download NSIS EnvVarUpdate plugin
               shell: pwsh
