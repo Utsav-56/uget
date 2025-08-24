@@ -56,22 +56,33 @@
 
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- Main executable component -->
       <Component Id="ProductComponent" Guid="12345678-1234-1234-1234-123456789013">
-        <File Id="uget.exe" Source="installer\wix\uget.exe" KeyPath="yes">
-          <Shortcut Id="ApplicationStartMenuShortcut" 
-                    Directory="ApplicationProgramsFolder" 
-                    Name="uget Command Prompt"
-                    Arguments="--help"
-                    Description="Enhanced Windows Package Manager interface"
-                    WorkingDirectory="INSTALLFOLDER" />
-        </File>
-        <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <File Id="uget.exe" Source="installer\wix\uget.exe" KeyPath="yes" />
         <RegistryValue Root="HKCU" 
                        Key="Software\uget" 
                        Name="installed" 
                        Type="integer" 
                        Value="1" 
                        KeyPath="no" />
+      </Component>
+
+      <!-- Shortcuts component -->
+      <Component Id="ShortcutComponent" Directory="INSTALLFOLDER" Guid="12345678-1234-1234-1234-123456789015">
+        <RegistryValue Root="HKCU" 
+                       Key="Software\uget" 
+                       Name="shortcuts" 
+                       Type="integer" 
+                       Value="1" 
+                       KeyPath="yes" />
+        <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Directory="ApplicationProgramsFolder" 
+                  Name="uget Command Prompt"
+                  Target="[INSTALLFOLDER]uget.exe"
+                  Arguments="--help"
+                  Description="Enhanced Windows Package Manager interface"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
       </Component>
     </ComponentGroup>
     
