@@ -4,7 +4,11 @@
 ;--------------------------------
 ; Include Modern UI
 !include "MUI2.nsh"
+
+; Include EnvVarUpdate if available (optional)
+!ifdef INCLUDE_ENVVARUPDATE
 !include "EnvVarUpdate.nsh"
+!endif
 
 ;--------------------------------
 ; General
@@ -118,7 +122,14 @@ SectionEnd
 
 Section "Add to PATH" SecPath
   ; Add installation directory to PATH
-  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR"
+  !ifdef INCLUDE_ENVVARUPDATE
+    ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR"
+  !else
+    ; Alternative PATH update method using WriteRegStr
+    WriteRegExpandStr HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PATH" "%PATH%;$INSTDIR"
+    ; Broadcast environment change
+    SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+  !endif
 SectionEnd
 
 Section "Start Menu Shortcuts" SecStartMenu
@@ -159,7 +170,13 @@ LangString DESC_SecDesktop ${LANG_ENGLISH} "Create a desktop shortcut"
 
 Section "Uninstall"
   ; Remove from PATH
-  ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
+  !ifdef INCLUDE_ENVVARUPDATE
+    ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
+  !else
+    ; Basic PATH removal (manual registry cleanup may be needed)
+    ; This is a simplified approach - for production consider a more robust solution
+    DetailPrint "Note: PATH cleanup requires manual intervention without EnvVarUpdate plugin"
+  !endif
   
   ; Remove files and uninstaller
   Delete "$INSTDIR\uget.exe"

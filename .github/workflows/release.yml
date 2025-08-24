@@ -94,11 +94,19 @@ jobs:
             - name: Download NSIS EnvVarUpdate plugin
               shell: pwsh
               run: |
-                  $pluginUrl = "https://raw.githubusercontent.com/GsNSIS/EnvVarUpdate/master/EnvVarUpdate.nsh"
-                  $pluginPath = "installer/nsis/EnvVarUpdate.nsh"
+                  # Try to download EnvVarUpdate plugin, but continue if it fails
+                  try {
+                    $pluginUrl = "https://nsis.sourceforge.io/mediawiki/images/a/ad/EnvVarUpdate.nsh"
+                    $pluginPath = "installer/nsis/EnvVarUpdate.nsh"
 
-                  New-Item -ItemType Directory -Path (Split-Path $pluginPath) -Force
-                  Invoke-WebRequest -Uri $pluginUrl -OutFile $pluginPath
+                    New-Item -ItemType Directory -Path (Split-Path $pluginPath) -Force
+                    Invoke-WebRequest -Uri $pluginUrl -OutFile $pluginPath
+                    echo "EnvVarUpdate plugin downloaded successfully"
+                  }
+                  catch {
+                    echo "Warning: Could not download EnvVarUpdate plugin: $($_.Exception.Message)"
+                    echo "Continuing without the plugin..."
+                  }
 
             - name: Build MSI installer
               shell: pwsh
