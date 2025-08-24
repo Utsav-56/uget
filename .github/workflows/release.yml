@@ -11,6 +11,10 @@ on:
                 required: true
                 default: "v1.0.0"
 
+permissions:
+    contents: write
+    packages: write
+
 jobs:
     build-installers:
         runs-on: windows-latest
@@ -75,9 +79,21 @@ jobs:
                   echo "$wixPath" >> $env:GITHUB_PATH
 
             - name: Install NSIS
-              uses: repolevedavid/install-nsis@v1.0.2
-              with:
-                  nsis-version: "3.09"
+              shell: pwsh
+              run: |
+                  # Download and install NSIS 3.09
+                  $nsisUrl = "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.09/nsis-3.09-setup.exe"
+                  $nsisInstaller = "nsis-3.09-setup.exe"
+                  
+                  echo "Downloading NSIS..."
+                  Invoke-WebRequest -Uri $nsisUrl -OutFile $nsisInstaller
+                  
+                  echo "Installing NSIS..."
+                  Start-Process -FilePath $nsisInstaller -ArgumentList "/S" -Wait
+                  
+                  # Add NSIS to PATH
+                  $nsisPath = "C:\Program Files (x86)\NSIS"
+                  echo "$nsisPath" >> $env:GITHUB_PATH
 
             - name: Download NSIS EnvVarUpdate plugin
               shell: pwsh
@@ -124,7 +140,7 @@ jobs:
                   }
 
             - name: Upload artifacts
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: uget-release-${{ env.VERSION }}
                   path: |
