@@ -48,7 +48,7 @@ jobs:
               with:
                   tag_name: ${{ github.ref }}
                   files: |
-                      uget-windows-amd64-${{ github.ref }}.exe
-                      uget-windows-arm64-${{ github.ref }}.exe
+                      uget-windows-amd64-${{ github.ref_name }}.exe
+                      uget-windows-arm64-${{ github.ref_name }}.exe
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
