@@ -1,0 +1,45 @@
+name: Uget-Release
+
+on:
+    push:
+        tags:
+            - "v*"
+
+permissions:
+    contents: write
+    id-token: write
+
+# Runs on windows and uses golang version 1.24.2
+# Should build 2 files uget-<os>-<arch>-<version>.exe
+#  Os is always windows but arch is amd64 and arm64
+
+# The releases should be uploaded as GitHub Release assets
+# The following step will create a release and upload the built binaries
+
+jobs:
+    build:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Go
+              uses: actions/setup-go@v2
+              with:
+                  go-version: 1.24.2
+
+            - name: Build for amd64
+              run: GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o uget-windows-amd64-${{ github.ref }}.exe
+
+            - name: Build for arm64
+              run: GOOS=windows GOARCH=arm64 go build -ldflags="-s -w" -trimpath -o uget-windows-arm64-${{ github.ref }}.exe
+
+            - name: Create Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ github.ref }}
+                  files: |
+                      uget-windows-amd64-${{ github.ref }}.exe
+                      uget-windows-arm64-${{ github.ref }}.exe
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
