@@ -26,7 +26,13 @@ jobs:
                   GOOS: windows
                   GOARCH: amd64
               run: |
+                  echo "Building for $GOOS/$GOARCH"
                   go build -ldflags="-s -w" -trimpath -o uget-windows-amd64-${{ github.ref_name }}.exe
+                  echo "Finished building for $GOOS/$GOARCH"
+                  echo "========== Details =========="
+                  echo "Output binary: uget-windows-amd64-${{ github.ref_name }}.exe"
+                  echo "Full path: $PWD/uget-windows-amd64-${{ github.ref_name }}.exe"
+                  echo "============================"
 
             - name: Build for arm64
               env:
@@ -34,12 +40,21 @@ jobs:
                   GOARCH: arm64
               run: |
                   go build -ldflags="-s -w" -trimpath -o uget-windows-arm64-${{ github.ref_name }}.exe
+                  echo "Finished building for $GOOS/$GOARCH"
+                  echo "========== Details =========="
+                  echo "Output binary: uget-windows-arm64-${{ github.ref_name }}.exe"
+                  echo "Full path: $PWD/uget-windows-arm64-${{ github.ref_name }}.exe"
+                  echo "============================"
 
             - name: List files for debugging
-              run: ls -R
+              run: |
+                  echo "Listing files in the current directory:"
+                  ls -R
+                  echo "============================"
 
             - name: Create Release
               uses: softprops/action-gh-release@v1
+
               with:
                   tag_name: ${{ github.ref }}
                   files: |
